@@ -44,11 +44,13 @@ def display_current_weather(weather_data):
     try:
         current_weather = weather_data['current']
         temperature = current_weather['temp']
+        apparent_temperature = current_weather['feels_like']
         condition = current_weather['weather'][0]['description']
         humidity = current_weather['humidity']
         wind_speed = current_weather['wind_speed']
 
         print(f"Temperature: {temperature}°C")
+        print(f"Apparent Temperature: {apparent_temperature}°C")
         print(f"Condition: {condition}")
         print(f"Humidity: {humidity}%")
         print(f"Wind Speed: {wind_speed} m/s")
@@ -58,6 +60,17 @@ def display_current_weather(weather_data):
         sunset = convert_unix_to_local_time(current_weather['sunset'], timezone_str)
         print(f"Sunrise: {sunrise}")
         print(f"Sunset: {sunset}")
+
+        if 'alerts' in weather_data:
+            print("\nAlerts:")
+            for alert in weather_data['alerts']:
+                sender = alert['sender_name']
+                event = alert['event']
+                start = convert_unix_to_local_time(alert['start'], timezone_str)
+                end = convert_unix_to_local_time(alert['end'], timezone_str)
+                description = alert['description']
+
+                print(f"- {event} by {sender}: {description} From {start} to {end}")
 
     except KeyError as e:
         print(f"Error retrieving weather data: missing {e} key.")
