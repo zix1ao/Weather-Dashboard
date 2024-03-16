@@ -1,5 +1,6 @@
-import datetime
+from datetime import datetime
 import os
+import pytz
 import requests
 from dotenv import load_dotenv
 
@@ -33,6 +34,12 @@ def fetch_weather(lat, lon, api_key):
     return response.json()
 
 
+def convert_unix_to_local_time(unix_time, timezone_str):
+    tz = pytz.timezone(timezone_str)
+    local_time = datetime.fromtimestamp(unix_time, tz)
+    return local_time.strftime('%Y-%m-%d %H:%M:%S')
+
+
 def display_current_weather(weather_data):
     try:
         current_weather = weather_data['current']
@@ -46,8 +53,9 @@ def display_current_weather(weather_data):
         print(f"Humidity: {humidity}%")
         print(f"Wind Speed: {wind_speed} m/s")
 
-        sunrise = datetime.datetime.fromtimestamp(current_weather['sunrise']).strftime('%Y-%m-%d %H:%M:%S')
-        sunset = datetime.datetime.fromtimestamp(current_weather['sunset']).strftime('%Y-%m-%d %H:%M:%S')
+        timezone_str = weather_data['timezone']
+        sunrise = convert_unix_to_local_time(current_weather['sunrise'], timezone_str)
+        sunset = convert_unix_to_local_time(current_weather['sunset'], timezone_str)
         print(f"Sunrise: {sunrise}")
         print(f"Sunset: {sunset}")
 
