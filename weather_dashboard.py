@@ -31,7 +31,13 @@ def fetch_weather(lat, lon, api_key):
     }
 
     response = requests.get(BASE_URL, params=params)
-    return response.json()
+
+    try:
+        response.raise_for_status()
+        return response.json()
+    except requests.HTTPError as http_err:
+        print(f"HTTP error occurred: {http_err}")
+        raise
 
 
 def convert_unix_to_local_time(unix_time, timezone_str):
